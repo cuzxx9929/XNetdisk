@@ -16,4 +16,9 @@ export default [
         name:'home',
         component:()=>import('@/pages/home')
     },
+    {
+        path:'/captcha',
+        name:'captcha',
+        component:()=>import('@/pages/captcha')
+    }
 ]

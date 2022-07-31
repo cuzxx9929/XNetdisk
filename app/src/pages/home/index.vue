@@ -212,8 +212,8 @@ export default {
       var files = e.dataTransfer.files;
       e.preventDefault();
       for (const file of files) {
-        if (file.size > 3 * 1024 * 1024 * 1024) {
-          alert("文件不能超过3GB");
+        if (file.size > 50 * 1024 * 1024) {
+          alert("文件不能超过50MB");
           continue;
         }
         let formdata = new FormData();
