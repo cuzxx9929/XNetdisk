@@ -21,3 +21,5 @@ export const DirInfo = (data) => requests({url:'/user/getDirInfo',data,method:'p
 export const DirRoute = (data) => requests({url:'/user/getDirRoute',data,method:'post'})
 
 export const DirDelete = (data) => requests({url:'/user/deleteDir',data,method:'post'})
+
+export const GetCaptcha = () => requests({url:'/api/getCaptcha',method:'get'})

@@ -3,7 +3,7 @@ import random
 from PIL import Image, ImageOps
 import numpy as np
 
-img = Image.open('./2.jpg')
+img = Image.open('./createCaptha/1.jpg')
 
 cropX = random.randint(0,img.width-310)
 cropY = random.randint(0,img.height-210)
@@ -21,7 +21,7 @@ slideY = random.randint(0, rows- 60)
 # slideY = 59
 # print(slideX,slideY)
 
-print([slideX,slideY])
+print(slideX,slideY)
 
 slide = cropped.crop((slideX,slideY,slideX+48,slideY+48))
 slide = ImageOps.expand(slide, border=1, fill='#6F686E')
@@ -38,5 +38,5 @@ for col in  range (slideX,slideX+48):
 cropped =  Image.fromarray(array)
 # cropped.show()
 
-slide.save('slide.jpg')
-cropped.save('cropped.jpg')
+slide.save('./createCaptha/slide.jpg')
+cropped.save('./createCaptha/cropped.jpg')

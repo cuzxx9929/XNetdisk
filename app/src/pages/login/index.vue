@@ -1,7 +1,7 @@
 <template>
   <div id="main">
     <div class="title">X 云盘</div>
-    <div class="container">
+    <div class="container" v-show="!captchaShow">
       <div class="opt">
         <div :class="unchoosed == 1 ? 'unchoosed' : ''" @click="unchoosed = 2">
           登录
@@ -30,7 +30,9 @@
             />
           </div>
           <div class="input-box">
-            <button @click="login">登录</button>
+            <!-- <button @click="login">登录</button> -->
+            <button @click="changeCaptchaShow">登录</button>
+
           </div>
           <div class="check">
             <input type="checkbox" v-model="autoLogin" />下次自动登录
@@ -65,78 +67,106 @@
           </div>
           <div class="input-box">
             <button @click="register">注册</button>
+            <!-- <button @click="changeCaptchaShow">注册</button> -->
+
           </div>
         </form>
       </div>
+      
     </div>
+    <captcha class="captcha" 
+    v-show="captchaShow" 
+    :username="username"
+    :autoLogin="autoLogin" 
+    :pw="pw" 
+    :changeCaptchaShow="changeCaptchaShow" 
+    :captchaShow="captchaShow"
+    :unchoosed="unchoosed"
+    >
+    </captcha>
   </div>
 </template>
 
 <script>
+import captcha from "@/components/captcha"
+
 export default {
-  name: "login",
-  data() {
-    return {
-      unchoosed: 2,
-      autoLogin: true,
-      username: "",
-      pw: "",
-      rpw: "",
-    };
-  },
-  watch: {
-    unchoosed: {
-      handler() {
-        this.username = "";
-        this.pw = "";
-        this.rpw = "";
-      },
+    name: "login",
+    components: {captcha},
+    data() {
+        return {
+            unchoosed: 2,
+            autoLogin: true,
+            username: "",
+            pw: "",
+            rpw: "",
+            captchaShow:false
+        };
     },
-  },
-  methods: {
-    async login() {
-      if(this.username!=''&&this.pw!=''){
-        var params = new URLSearchParams()
-        params.append('username', this.username)
-        params.append('password', this.pw)
-        try{
-          await this.$store.dispatch('login',{params,autoLogin:this.autoLogin})
-          alert('登录成功')
-          this.$router.push('/home/folder')
-        }catch(err){
-          alert(err.message)
-        }
-      }
+    watch: {
+        unchoosed: {
+            handler() {
+                this.username = "";
+                this.pw = "";
+                this.rpw = "";
+            },
+        },
     },
-    async register(){
-      if(this.username!=""&&this.pw!=""&&this.rpw==this.pw){
-        var params = new URLSearchParams()
-        params.append('username', this.username)
-        params.append('password', this.pw)
-        try{
-          let res = await this.$store.dispatch('register',params)
-          alert('注册成功')
-          this.unchoosed = 2
-        }catch(err){
-          alert(err.message)
+    methods: {
+        changeCaptchaShow(){
+          this.captchaShow=!this.captchaShow
+        },
+        async login() {
+            if (this.username != "" && this.pw != "") {
+                var params = new URLSearchParams();
+                params.append("username", this.username);
+                params.append("password", this.pw);
+                try {
+                    await this.$store.dispatch("login", { params, autoLogin: this.autoLogin });
+                    alert("登录成功");
+                    this.$router.push("/home/folder");
+                }
+                catch (err) {
+                    alert(err.message);
+                }
+            }
+        },
+        async register() {
+            if (this.username != "" && this.pw != "" && this.rpw == this.pw) {
+                var params = new URLSearchParams();
+                params.append("username", this.username);
+                params.append("password", this.pw);
+                try {
+                    let res = await this.$store.dispatch("register", params);
+                    alert("注册成功");
+                    this.unchoosed = 2;
+                }
+                catch (err) {
+                    alert(err.message);
+                }
+            }
+            else {
+                alert("用户名密码未填写或两次密码输入不相同");
+            }
         }
-      }else{
-        alert('用户名密码未填写或两次密码输入不相同')
-      }
-    }
-  }
+    },
 };
 </script>
 
 <style lang="less">
 #main {
   text-align: center;
-
   display: flex;
   flex-direction: column;
-
   background-color: #ECEFFF;
   height: 100vh;
+  .captcha{
+    position: absolute;
+    top:195px;
+    left:50%;
+    transform: translateX(-50%);
+  }
+  
   .title {
     margin-top: 145px;
     height: 50px;
@@ -152,6 +182,7 @@ export default {
     border-radius: 12px;
     display: flex;
     flex-direction: column;
+
 
     .opt {
       height: 55px;

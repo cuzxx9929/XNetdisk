@@ -10,6 +10,8 @@ router.post('/api/login' ,expressJoi(login_schema),routerHandler.login)
 
 router.post('/api/register' ,expressJoi(login_schema),routerHandler.register)
 
+router.get('/api/getCaptha',routerHandler.getCaptha)
+
 router.get('/user/getInfo',routerHandler.getInfo)
 
 router.post('/user/getFileInfo',routerHandler.getFileInfo)
@@ -28,6 +30,7 @@ router.post('/user/getDirRoute',routerHandler.getDirRoute)
 
 router.post('/user/deleteDir',routerHandler.deleteDir)
 
+router.get('/api/getCaptcha' ,routerHandler.getCaptha)
 
 
 module.exports = router 

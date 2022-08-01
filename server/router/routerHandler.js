@@ -6,6 +6,27 @@ const jwt = require('jsonwebtoken')
 const config = require('../config')
 const { v4 } = require('uuid')
 const { getDate } = require('../date/date.js')
+const pro = require("child_process")
+
+//获取图片验证码
+exports.getCaptha = (req,res) =>{
+    console.log(getDate(),req.ip, 'getCaptcha...')
+    pro.exec("python ./createCaptha/createPic.py", function (error, stdout, stderr) {
+        if (error) {
+            console.info(stderr)
+        }
+        console.log(stdout)
+        let captchaPic = fs.readFileSync('./createCaptha/cropped.jpg')
+        let sliderPic = fs.readFileSync('./createCaptha/slide.jpg')
+        res.send({
+            status: 0,
+            posY:stdout.split(' ')[1],
+            message: "success",
+            captchaPic:captchaPic,
+            sliderPic:sliderPic
+        })
+    })
+}
 
 //用户注册 
 exports.register = (req, res) => {
