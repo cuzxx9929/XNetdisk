@@ -13,25 +13,14 @@
       <div class="form" v-if="unchoosed == 2">
         <form>
           <div class="input-box">
-            <input
-              type="text"
-              placeholder="请输入用户名"
-              class="fm-text"
-              v-model="username"
-              
-            />
+            <input type="text" placeholder="请输入用户名" class="fm-text" v-model="username" />
           </div>
           <div class="input-box">
-            <input
-              type="password"
-              placeholder="请输入密码"
-              class="fm-text"
-              v-model="pw"
-            />
+            <input type="password" placeholder="请输入密码" class="fm-text" v-model="pw" />
           </div>
           <div class="input-box">
             <!-- <button @click="login">登录</button> -->
-            <button @click="changeCaptchaShow">登录</button>
+            <button @click.prevent="changeCaptchaShow">登录</button>
 
           </div>
           <div class="check">
@@ -42,47 +31,25 @@
       <div class="form" v-if="unchoosed == 1">
         <form>
           <div class="input-box">
-            <input
-              type="text"
-              placeholder="请输入用户名"
-              class="fm-text"
-              v-model="username"
-            />
+            <input type="text" placeholder="请输入用户名" class="fm-text" v-model="username" />
           </div>
           <div class="input-box">
-            <input
-              type="password"
-              placeholder="请输入密码"
-              class="fm-text"
-              v-model="pw"
-            />
+            <input type="password" placeholder="请输入密码" class="fm-text" v-model="pw" />
           </div>
           <div class="input-box">
-            <input
-              type="password"
-              placeholder="请再次输入密码"
-              class="fm-text"
-              v-model="rpw"
-            />
+            <input type="password" placeholder="请再次输入密码" class="fm-text" v-model="rpw" />
           </div>
           <div class="input-box">
-            <button @click="register">注册</button>
-            <!-- <button @click="changeCaptchaShow">注册</button> -->
+            <!-- <button @click="register">注册</button> -->
+            <button @click.prevent="changeCaptchaShow">注册</button>
 
           </div>
         </form>
       </div>
-      
+
     </div>
-    <captcha class="captcha" 
-    v-show="captchaShow" 
-    :username="username"
-    :autoLogin="autoLogin" 
-    :pw="pw" 
-    :changeCaptchaShow="changeCaptchaShow" 
-    :captchaShow="captchaShow"
-    :unchoosed="unchoosed"
-    >
+    <captcha class="captcha" v-show="captchaShow" :username="username" :autoLogin="autoLogin" :pw="pw"
+      :changeCaptchaShow="changeCaptchaShow" :captchaShow="captchaShow" :unchoosed="unchoosed">
     </captcha>
   </div>
 </template>
@@ -91,65 +58,57 @@
 import captcha from "@/components/captcha"
 
 export default {
-    name: "login",
-    components: {captcha},
-    data() {
-        return {
-            unchoosed: 2,
-            autoLogin: true,
-            username: "",
-            pw: "",
-            rpw: "",
-            captchaShow:false
-        };
+  name: "login",
+  components: { captcha },
+  mounted() {
+    this.$bus.$on('closeCaptcha', () => {
+      this.captchaShow = !this.captchaShow
+    }),
+      this.$bus.$on('resetunchoosed', () => {
+        this.unchoosed = 2
+      })
+  },
+  data() {
+    return {
+      unchoosed: 2,
+      autoLogin: true,
+      username: "",
+      pw: "",
+      rpw: "",
+      captchaShow: false
+    };
+  },
+  watch: {
+    unchoosed: {
+      handler() {
+        this.username = "";
+        this.pw = "";
+        this.rpw = "";
+      },
     },
-    watch: {
-        unchoosed: {
-            handler() {
-                this.username = "";
-                this.pw = "";
-                this.rpw = "";
-            },
-        },
-    },
-    methods: {
-        changeCaptchaShow(){
-          this.captchaShow=!this.captchaShow
-        },
-        async login() {
-            if (this.username != "" && this.pw != "") {
-                var params = new URLSearchParams();
-                params.append("username", this.username);
-                params.append("password", this.pw);
-                try {
-                    await this.$store.dispatch("login", { params, autoLogin: this.autoLogin });
-                    alert("登录成功");
-                    this.$router.push("/home/folder");
-                }
-                catch (err) {
-                    alert(err.message);
-                }
-            }
-        },
-        async register() {
-            if (this.username != "" && this.pw != "" && this.rpw == this.pw) {
-                var params = new URLSearchParams();
-                params.append("username", this.username);
-                params.append("password", this.pw);
-                try {
-                    let res = await this.$store.dispatch("register", params);
-                    alert("注册成功");
-                    this.unchoosed = 2;
-                }
-                catch (err) {
-                    alert(err.message);
-                }
-            }
-            else {
-                alert("用户名密码未填写或两次密码输入不相同");
-            }
+  },
+  methods: {
+    changeCaptchaShow() {
+      if (this.unchoosed == 2) {
+        if (this.username == "" || this.pw == "") {
+          alert("用户名或密码不能为空")
+          return
         }
+      } else {
+        if (this.username == "" || this.pw == "" || this.rpw == "") {
+          alert("用户名或密码不能为空")
+          return
+        }
+        if (this.pw != this.rpw) {
+          alert("两次密码输入不同")
+          this.pw = "";
+          this.rpw = "";
+          return
+        }
+      }
+      this.captchaShow = !this.captchaShow;
     },
+  },
 };
 </script>
 
@@ -160,13 +119,14 @@ export default {
   flex-direction: column;
   background-color: #ECEFFF;
   height: 100vh;
-  .captcha{
+
+  .captcha {
     position: absolute;
-    top:195px;
-    left:50%;
+    top: 195px;
+    left: 50%;
     transform: translateX(-50%);
   }
-  
+
   .title {
     margin-top: 145px;
     height: 50px;
@@ -251,6 +211,7 @@ export default {
     }
   }
 }
+
 .unchoosed {
   color: rgba(37, 38, 43, 0.36);
   background: #f5f5f6;

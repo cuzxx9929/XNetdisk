@@ -7,6 +7,10 @@ const config = require('../config')
 const { v4 } = require('uuid')
 const { getDate } = require('../date/date.js')
 const pro = require("child_process")
+const { func } = require('joi')
+const internal = require('stream')
+
+var posX
 
 //获取图片验证码
 exports.getCaptha = (req,res) =>{
@@ -18,9 +22,11 @@ exports.getCaptha = (req,res) =>{
         console.log(stdout)
         let captchaPic = fs.readFileSync('./createCaptha/cropped.jpg')
         let sliderPic = fs.readFileSync('./createCaptha/slide.jpg')
+        posX = parseInt(stdout.split(' ')[0].trim())
+
         res.send({
             status: 0,
-            posY:stdout.split(' ')[1],
+            posY:stdout.split(' ')[1].trim(),
             message: "success",
             captchaPic:captchaPic,
             sliderPic:sliderPic
@@ -28,11 +34,29 @@ exports.getCaptha = (req,res) =>{
     })
 }
 
+//验证验证码鼠标轨迹
+function verifyCaptcha(mouseroute,sliderPos){
+    let route = mouseroute.split(',')
+    route.forEach((element,index) => {
+        route[index] =  parseInt(element)
+    });
+    if(route.length==0 || route.length%2==1)
+        return false
+    if(Math.abs(parseInt(sliderPos)-posX)>3)
+        return false
+    return true
+}
+
 //用户注册 
 exports.register = (req, res) => {
     try {
         var info = req.body, p
         console.log(getDate(),req.ip, 'register...')
+        console.log(info)
+        let verifyRes = verifyCaptcha(info.mouseroute,info.sliderPos)
+        if (!verifyRes){
+           return res.cc('CaptchaError')
+        }
 
         const selectSqlStr = 'select * from users where username= ?'
         db.query(selectSqlStr, info.username, (err, results) => {
@@ -76,6 +100,10 @@ exports.login = (req, res) => {
         let info = req.body
         let selectSqlStr = 'select * from users where username = ?'
         console.log(getDate(),req.ip, 'login...')
+        let verifyRes = verifyCaptcha(info.mouseroute,info.sliderPos)
+        if (!verifyRes){
+           return res.cc('CaptchaError')
+        }
         db.query(selectSqlStr, info.username, (err, results) => {
             if (err)
                 return res.cc(err)

@@ -33,9 +33,10 @@ app.use(expressjwt({algorithms: ['HS256'],secret:config.jwtSecretKey}).unless({p
 app.use(UserRouter)
 
 app.use((err,req,res,next)=>{
-    if(err instanceof joi.ValidationError)
+    if(err instanceof joi.ValidationError){
+        // console.log(err)
         return res.cc('用户名长度需为3-10位,密码长度需为6-12位')
-
+    }
     if(err.name =="UnauthorizedError")
         return res.cc('身份认证失败')
     res.cc(err)
