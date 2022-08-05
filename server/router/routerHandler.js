@@ -10,11 +10,11 @@ const pro = require("child_process")
 const { func } = require('joi')
 const internal = require('stream')
 
-var posX
 
 //获取图片验证码
 exports.getCaptha = (req,res) =>{
     console.log(getDate(),req.ip, 'getCaptcha...')
+
     pro.exec("python ./createCaptha/createPic.py", function (error, stdout, stderr) {
         if (error) {
             console.info(stderr)
@@ -22,8 +22,8 @@ exports.getCaptha = (req,res) =>{
         console.log(stdout)
         let captchaPic = fs.readFileSync('./createCaptha/cropped.jpg')
         let sliderPic = fs.readFileSync('./createCaptha/slide.jpg')
-        posX = parseInt(stdout.split(' ')[0].trim())
-
+        req.session.posX = parseInt(stdout.split(' ')[0].trim())
+        console.log(req.session)
         res.send({
             status: 0,
             posY:stdout.split(' ')[1].trim(),
@@ -35,7 +35,7 @@ exports.getCaptha = (req,res) =>{
 }
 
 //验证验证码鼠标轨迹
-function verifyCaptcha(mouseroute,sliderPos){
+function verifyCaptcha(mouseroute,sliderPos,posX){
     let route = mouseroute.split(',')
     route.forEach((element,index) => {
         route[index] =  parseInt(element)
@@ -52,12 +52,12 @@ exports.register = (req, res) => {
     try {
         var info = req.body, p
         console.log(getDate(),req.ip, 'register...')
-        console.log(info)
-        let verifyRes = verifyCaptcha(info.mouseroute,info.sliderPos)
+        let verifyRes = verifyCaptcha(info.mouseroute,info.sliderPos,req.session.posX)
         if (!verifyRes){
            return res.cc('CaptchaError')
         }
-
+    
+        req.session.destroy();
         const selectSqlStr = 'select * from users where username= ?'
         db.query(selectSqlStr, info.username, (err, results) => {
             if (err) {

@@ -2,6 +2,7 @@ const express = require('express')
 const cors = require('cors')
 const joi = require('joi')
 const {expressjwt} = require('express-jwt')
+const session = require("express-session")
 
 const UserRouter = require('./router/router.js')
 const config = require('./config')
@@ -11,6 +12,13 @@ const app = express()
 app.use(cors())
 
 app.use(express.static('public'))
+
+app.use(session({
+    secret: config.sessionKey,
+    cookie: {maxAge: 100},
+    resave: false,
+    saveUninitialized: true
+}))
 
 app.use(express.json())
 
