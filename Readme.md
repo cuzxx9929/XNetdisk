@@ -42,4 +42,4 @@
 
 ### 项目网站
 
-[X网盘](cuzxx.xyz)
+[X网盘](https://cuzxx.xyz)
