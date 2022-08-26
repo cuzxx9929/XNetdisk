@@ -40,18 +40,6 @@
 
 
 
-### 项目数据库设计
+### 项目网站
 
-+ 文件夹
-
-  ![image-20220807170759771](C:\Users\XXX\AppData\Roaming\Typora\typora-user-images\image-20220807170759771.png)
-
-
-
-+ 文件
-
-  ![image-20220807170950869](C:\Users\XXX\AppData\Roaming\Typora\typora-user-images\image-20220807170950869.png)
-
-+ 用户
-
-  ![image-20220807171050367](C:\Users\XXX\AppData\Roaming\Typora\typora-user-images\image-20220807171050367.png)
+[X网盘](cuzxx.xyz)
