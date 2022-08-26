@@ -14,8 +14,13 @@
     <!-- 提示文本，层级在滑块容器和颜色容器之上 -->
     <div class="tip">向右滑动完成拼图</div>
 
-    <!-- 滑块 -->
-    <div class="slider" @mousedown="sliderMoveStart($event)" ref="slider">>>></div>
+    <!-- 滑块       -->
+    <div class="slider" 
+    @mousedown="sliderMoveStart($event)"
+    @touchstart="sliderMoveStart($event)" 
+    @touchmove = "sliderMove($event)"
+    @touchend = "sliderMoveEnd($event)"
+    ref="slider">>>></div>
 
   </div>
 </template>
@@ -33,7 +38,7 @@ export default {
     }
   },
   beforeDestroy() {
-    console.log('cap destroy')
+    // console.log('cap destroy')
     document.onmousemove = null
     document.onmouseup = null
   },
@@ -42,12 +47,14 @@ export default {
       this.$bus.$emit('closeCaptcha')
     },
     sliderMoveStart(e) {
-      // console.log(this.$refs.slidePic)
-      this.MouseStartPos = e.clientX
+      this.MouseStartPos = e.clientX?e.clientX:e.changedTouches[0].clientX
       this.MoveFlag = true
+      // console.log(this.MouseStartPos,this.MoveFlag)
     },
     sliderMove(e) {
+      e = e.clientX?e:e.touches[0]
       if (this.MoveFlag) {
+
         this.MouseRoute.push([e.clientX, e.clientY])
         if (e.clientX - this.MouseStartPos >= 0 && e.clientX - this.MouseStartPos <= 250) {
           this.$refs.slidePic.style.left = `${e.clientX - this.MouseStartPos}px`
@@ -65,12 +72,11 @@ export default {
       }
     },
     async sliderMoveEnd(e) {
-      console.log(this.unchoosed)
       if (this.MoveFlag) {
         this.MoveFlag = false
         if (this.unchoosed == 2) {
           this.login()
-        } else {
+        } else {    
           this.register()
         }
       }
@@ -78,7 +84,7 @@ export default {
       // console.log(this.MouseRoute.lengh)
     },
     async login() {
-      console.log('logining..')
+      // console.log('logining..')
       var params = new URLSearchParams();
       params.append("username", this.username);
       params.append("password", this.pw);
@@ -152,10 +158,11 @@ export default {
       // }
     },
     async getCapthcaPic() {
+      this.MouseRoute = []
       let result = await GetCaptcha()
-      console.log(result)
-      console.log(result.captchaPic)
-      console.log(typeof result.captchaPic)
+      // console.log(result)
+      // console.log(result.captchaPic)
+      // console.log(typeof result.captchaPic)
       let bytes = new Uint8Array(result.captchaPic.data);
       let data = "";
       let len = bytes.byteLength;
@@ -180,7 +187,6 @@ export default {
         this.$refs.slider.style.left = 0
         this.$refs.coverBG.style.width = 0
         this.$refs.coverBG.style.backgroundColor = 'rgba(99, 125, 255, 1)'
-
         document.onmousemove = this.sliderMove
         document.onmouseup = this.sliderMoveEnd
         this.getCapthcaPic()

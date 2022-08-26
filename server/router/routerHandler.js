@@ -7,8 +7,7 @@ const config = require('../config')
 const { v4 } = require('uuid')
 const { getDate } = require('../date/date.js')
 const pro = require("child_process")
-const { func } = require('joi')
-const internal = require('stream')
+
 
 
 //获取图片验证码
@@ -24,6 +23,10 @@ exports.getCaptha = (req,res) =>{
         let sliderPic = fs.readFileSync('./createCaptha/slide.jpg')
         req.session.posX = parseInt(stdout.split(' ')[0].trim())
         console.log(req.session)
+        // console.log(req.session.cookie)
+
+        console.log(req.session.id)
+
         res.send({
             status: 0,
             posY:stdout.split(' ')[1].trim(),
@@ -100,7 +103,11 @@ exports.login = (req, res) => {
         let info = req.body
         let selectSqlStr = 'select * from users where username = ?'
         console.log(getDate(),req.ip, 'login...')
-        let verifyRes = verifyCaptcha(info.mouseroute,info.sliderPos)
+
+        if(req.session.posX==undefined)
+            return res.cc('CaptchaError')
+
+        let verifyRes = verifyCaptcha(info.mouseroute,info.sliderPos,req.session.posX)
         if (!verifyRes){
            return res.cc('CaptchaError')
         }

@@ -4,10 +4,13 @@ import nprogress from 'nprogress'
 import "nprogress/nprogress.css"
 
 
+
 let requests = axios.create({
-    // baseURL: 'http://106.52.185.109:8888',
-    baseURL: 'http://localhost:8888/',
-    // timeout: 5000
+    // baseURL: 'http://43.142.102.210:8888',
+    baseURL: 'https://cuzxx.xyz:443',
+    // baseURL:'https://localhost:443',
+    // timeout: 5000,
+    withCredentials: true
 });
 
 requests.interceptors.request.use(config => {
@@ -18,7 +21,7 @@ requests.interceptors.request.use(config => {
     }
 
     return config;
-});
+}); 
 
 requests.interceptors.response.use((res) => {
     nprogress.done();

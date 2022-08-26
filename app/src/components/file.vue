@@ -123,7 +123,7 @@ export default {
           alert(err.message);
         }
       } else {
-        console.log('dir delete')
+        // console.log('dir delete')
         const params = new URLSearchParams();
         params.append("id", this.info.id);
         let res = await DirDelete(params);

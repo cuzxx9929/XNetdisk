@@ -3,22 +3,45 @@ const cors = require('cors')
 const joi = require('joi')
 const {expressjwt} = require('express-jwt')
 const session = require("express-session")
+const https = require('https')
+const http = require('http')
+
+const fs = require('fs')
 
 const UserRouter = require('./router/router.js')
 const config = require('./config')
 
+var options = {
+    key:fs.readFileSync('./cuzxx.xyz.key'),
+    cert:fs.readFileSync('./cuzxx.xyz_bundle.crt')
+}
+
+
 const app = express()
 
-app.use(cors())
+app.use(cors({
+    // origin: 'https://cuzxx.xyz',
+    // origin: ['http://localhost:8080',"http://192.168.2.102:8080"],
+    origin: ['http://localhost:8080',"http://192.168.2.102:8080"],
+
+    allowMethods: 'GET,HEAD,PUT,POST,DELETE,PATCH',
+    credentials: true
+ }))
+
 
 app.use(express.static('public'))
 
 app.use(session({
     secret: config.sessionKey,
-    cookie: {maxAge: 100},
+    cookie: {
+        secure: true ,
+        maxAge: 60* 60 * 1000,
+        sameSite: 'none'
+    },
     resave: false,
     saveUninitialized: true
 }))
+
 
 app.use(express.json())
 
@@ -50,7 +73,15 @@ app.use((err,req,res,next)=>{
     res.cc(err)
 })
 
-app.listen('8888',()=>{
-    console.log('server running at http://localhost:8888')
+
+const httpsServer = https.createServer(options,app)
+const httpServer = http.createServer(app)
+
+httpsServer.listen('443',()=>{
+    console.log('httpsServer running at https://localhost:443')
+})
+
+httpServer.listen('8889',()=>{
+    console.log('httpServer running at http://localhost:8889')
 })
 

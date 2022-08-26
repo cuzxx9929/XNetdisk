@@ -141,7 +141,7 @@ export default {
       this.dirmaskShow = false;
     });
     this.$bus.$on("reget", () => {
-      console.log("reget");
+      // console.log("reget");
       this.getAllinfo();
     });
     if(this.$route.params.did!=undefined)

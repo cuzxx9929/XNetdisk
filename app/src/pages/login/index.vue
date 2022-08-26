@@ -51,6 +51,8 @@
     <captcha class="captcha" v-show="captchaShow" :username="username" :autoLogin="autoLogin" :pw="pw"
       :changeCaptchaShow="changeCaptchaShow" :captchaShow="captchaShow" :unchoosed="unchoosed">
     </captcha>
+
+    <div class="footerLaw">ICP备案/许可证号：粤ICP备2022096885号</div>
   </div>
 </template>
 
@@ -120,6 +122,13 @@ export default {
   background-color: #ECEFFF;
   height: 100vh;
 
+  .footerLaw{
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 10px;
+  }
   .captcha {
     position: absolute;
     top: 195px;
